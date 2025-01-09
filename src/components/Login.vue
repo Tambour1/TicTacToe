@@ -12,14 +12,14 @@ export default {
     };
   },
   methods: {
-    handleLogin() {
+    handleLogin() {      
       login(this.username, this.password)
         .then((response) => {
-          setToken(response.data.token);
+          setToken(response.token);
           this.$router.push("/");
         })
         .catch((error) => {
-          this.error = error.response.data.message;
+          this.error = error;
         });
     },
   },
@@ -29,8 +29,8 @@ export default {
 <template>
     <div>
         <form @submit.prevent="handleLogin">
-        <input type="text" placeholder="Username" v-bind="username" />
-        <input type="password" placeholder="Password" v-bind="password" />
+        <input type="text" placeholder="Username" v-model="username" />
+        <input type="password" placeholder="Password" v-model="password" />
         <button type="submit">Se connecter</button>
         <p v-if="error">{{ error }}</p>
         </form>

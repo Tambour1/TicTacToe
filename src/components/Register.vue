@@ -23,7 +23,7 @@ export default {
             this.$router.push("/login");
           })
           .catch((error) => {
-            this.error = error.response.data.message;
+            this.error = error;
           });
     },
   },
@@ -33,9 +33,9 @@ export default {
 <template>
     <div>
         <form @submit.prevent="handleRegister">
-        <input type="text" placeholder="Username" v-bind="username" />
-        <input type="password" placeholder="Password" v-bind="password" />
-        <input type="password" placeholder="Confirm Password" v-bind="confirmPassword" />
+        <input type="text" placeholder="Username" v-model="username" />
+        <input type="password" placeholder="Password" v-model="password" />
+        <input type="password" placeholder="Confirm Password" v-model="confirmPassword" />
         <button type="submit">S'inscrire</button>
         <p v-if="error">{{ error }}</p>        
         </form>
