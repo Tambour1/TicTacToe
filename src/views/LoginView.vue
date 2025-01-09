@@ -1,10 +1,14 @@
+<script>
+import Login from '../components/Login.vue';
+export default {
+  name: "LoginView",
+  components: {
+    Login,
+  },
+};
+</script>
+
 <template>
-    <div>
-        <h1>Page Login</h1>
-        <form>
-        <input type="text" placeholder="Username" />
-        <input type="password"placeholder="Password" />
-        <button type="submit">Login</button>
-        </form>
-    </div>
+    <h1>Page Login</h1>
+    <Login />
 </template>
