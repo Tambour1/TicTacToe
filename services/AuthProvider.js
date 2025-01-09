@@ -1,3 +1,5 @@
+import { jwtDecode } from 'jwt-decode';
+
 function isAuthenticated() {
   return localStorage.getItem('token') !== null;
 }
@@ -15,8 +17,7 @@ function getUserIdentity() {
   if (!token) return null;
 
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload;
+    return jwtDecode(token);
   } catch (error) {
     console.error('Erreur lors du décodage du token:', error);
     return null;
