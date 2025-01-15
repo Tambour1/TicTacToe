@@ -52,4 +52,13 @@ const register = (username, password) => {
     return request('/register', 'POST', { username, password }, true);
 };
 
-export { request, login, register };
+const getUser = (id) => {
+    return request(`/user/${id}`, 'GET');
+};
+
+const updateUser = (userData) => {
+    return request('/user', 'PUT', userData);
+};
+
+
+export { request, login, register, getUser, updateUser };
