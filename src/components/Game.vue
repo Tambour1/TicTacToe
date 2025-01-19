@@ -1,11 +1,16 @@
 <script>
 import { getUserIdentity } from "../../services/AuthProvider";
-import { getGame, playMove } from "../../services/httpClient";
+import { getGame, playMove, getUser } from "../../services/httpClient";
 import Cell from "./Cell.vue";
 
 export default {
   name: "Game",
-  props: ["gameId"],
+  props: {
+    gameId: {
+      type: String,
+      required: true,
+    },
+  },
   components: { Cell },
   data() {
     return {
@@ -22,9 +27,14 @@ export default {
         player1: null,
         player2: null,
       },
+      players: {
+        player1: null,
+        player2: null,
+      },
     };
   },
   methods: {
+    // Méthode pour récupérer les informations de la partie
     async fetchGameState() {
       try {
         const game = await getGame(this.gameId);
@@ -32,30 +42,38 @@ export default {
           this.gameState = game.status;
           this.board = this.formatBoard(game.board);
           this.currentPlayer = game.currentPlayer;
+
           const user = getUserIdentity();
           this.userId = user.id;
 
-          this.playerNames.player1 = game.player1;
-          this.playerNames.player2 = game.player2 || "En attente d’un joueur 2";
+          const player1 = await getUser(game.player1);
+          this.playerNames.player1 = player1.username;
+          this.players.player1 = game.player1;
+
+          const player2 = game.player2 ? await getUser(game.player2) : null;
+          this.players.player2 = game.player2;
+          this.playerNames.player2 = player2
+            ? player2.username
+            : "En attente d’un joueur 2";
 
           if (game.status === "finished") {
-            this.winner =
-              game.winner === this.playerNames.player1
-                ? "Joueur 1"
-                : game.winner === this.playerNames.player2
-                  ? "Joueur 2"
-                  : null;
+            if (game.winner === this.players.player1) {
+              this.winner = this.playerNames.player1;
+            } else if (game.winner === this.players.player2) {
+              this.winner = this.playerNames.player2;
+            } else {
+              this.winner = "draw";
+            }
           } else if (game.status === "draw") {
             this.winner = "draw";
           }
         }
       } catch (error) {
-        console.error("Erreur fetchGameState:", error);
-        this.error =
-          "Erreur lors de la récupération des informations de la partie";
+        this.error = "Impossible de récupérer les informations de la partie.";
       }
     },
 
+    // Méthode pour formater le plateau de jeu
     formatBoard(flatBoard) {
       return [
         [flatBoard[0], flatBoard[1], flatBoard[2]],
@@ -64,11 +82,13 @@ export default {
       ];
     },
 
+    // Méthode pour démarrer le polling
     startPolling() {
       if (this.polling) return;
       this.polling = setInterval(this.fetchGameState, 1000);
     },
 
+    // Méthode pour arrêter le polling
     stopPolling() {
       if (this.polling) {
         clearInterval(this.polling);
@@ -76,28 +96,46 @@ export default {
       }
     },
 
+    // Méthode pour jouer un coup
     async playMove(row, col) {
-      try {
-        await this.fetchGameState();
-        await playMove(this.gameId, row, col);
-      } catch (error) {
-        this.error = "Erreur lors de l’envoi de votre mouvement.";
-      }
+      await this.fetchGameState();
+      await playMove(this.gameId, row, col);
     },
 
-    getCellClass(cellValue) {
-      if (cellValue === this.playerNames.player1) {
-        return "player1-cell";
-      } else if (cellValue === this.playerNames.player2) {
-        return "player2-cell";
-      }
-      return "";
+    // Méthode pour définir la couleur de la cellule
+    setCellColor(cellValue) {
+      return {
+        "player1-cell": cellValue === this.players.player1,
+        "player2-cell": cellValue === this.players.player2,
+      };
+    },
+
+    // Méthode pour rediriger vers le dashboard une fois la partie terminée
+    backDashboard() {
+      setTimeout(() => {
+        this.$router.push("/");
+      }, 3000);
     },
   },
+
+  watch: {
+    winner(newValue) {
+      if (newValue === "draw" || this.gameState === "finished") {
+        this.backDashboard();
+      }
+    },
+    gameState(newValue) {
+      if (newValue === "finished" && this.winner !== null) {
+        this.backDashboard();
+      }
+    },
+  },
+
   async created() {
     await this.fetchGameState();
     this.startPolling();
   },
+
   beforeUnmount() {
     this.stopPolling();
   },
@@ -105,71 +143,80 @@ export default {
 </script>
 
 <template>
-  <div class="game">
-    <h1>Partie {{ gameId }}</h1>
-    <div v-if="error" class="error">{{ error }}</div>
-    <p>{{ "User actuel de la session " + userId }}</p>
-    <p>{{ "currentPlayer " + currentPlayer }}</p>
+  <div
+    class="min-h-screen bg-gray-100 flex flex-col justify-center items-center py-8"
+  >
+    <div class="bg-white w-full max-w-xl p-8 rounded-lg shadow-lg">
+      <h1 class="text-3xl font-semibold text-center mb-6">
+        Partie {{ gameId }}
+      </h1>
 
-    <div v-if="gameState">
-      <!-- Afficher les joueurs -->
-      <div class="players">
-        <p>Joueur 1 : {{ playerNames.player1 }}</p>
-        <p>Joueur 2 : {{ playerNames.player2 }}</p>
+      <!-- erreurs -->
+      <div v-if="error" class="text-red-600 text-center mb-4">
+        {{ error }}
       </div>
 
-      <!-- Plateau de jeu -->
-      <div v-if="winner === null">
-        <div class="board">
-          <div v-for="(row, rowIndex) in board" :key="rowIndex" class="row">
+      <div v-if="gameState !== 'finished'">
+        <!-- Les joueurs -->
+        <div
+          v-if="winner !== 'draw'"
+          class="flex justify-around mb-6 text-center"
+        >
+          <p class="text-lg text-gray-800 font-medium">
+            Joueur 1 : {{ playerNames.player1 }}
+          </p>
+          <p class="text-lg text-gray-800 font-medium">
+            Joueur 2 : {{ playerNames.player2 }}
+          </p>
+        </div>
+
+        <!-- Plateau de jeu -->
+        <div v-if="winner === null">
+          <div
+            v-for="(row, rowIndex) in board"
+            :key="rowIndex"
+            class="flex justify-center"
+          >
             <Cell
               v-for="(cell, colIndex) in row"
               :key="colIndex"
               :is-disabled="!!cell || currentPlayer !== userId"
-              :class="getCellClass(cell)"
+              :class="setCellColor(cell)"
               @click="playMove(rowIndex, colIndex)"
             />
           </div>
         </div>
-        <p v-if="gameState !== 'finished'">
+
+        <!--  Les tours -->
+        <p v-if="winner !== 'draw'" class="text-center text-xl mt-4">
           C'est au tour de
-          {{ currentPlayer === userId ? "vous" : "l’adversaire" }} de jouer.
+          <span class="font-bold">{{
+            currentPlayer === userId ? "vous" : "l’adversaire"
+          }}</span>
         </p>
 
-        <p v-if="gameState === 'waiting'">
+        <!--  En attente -->
+        <p
+          v-if="gameState === 'waiting'"
+          class="text-center text-lg text-gray-500 mt-4"
+        >
           En attente d’un autre joueur pour commencer...
         </p>
       </div>
 
-      <!-- Résultats -->
-      <div v-else>
-        <p v-if="winner === 'draw'">Match nul !</p>
-        <p v-else>Victoire de {{ winner }} !</p>
-      </div>
+      <!--  Fin de partie -->
+      <p
+        v-if="winner === 'draw'"
+        class="text-xl text-center font-semibold text-gray-700"
+      >
+        Match nul !
+      </p>
+      <p
+        v-if="gameState === 'finished'"
+        class="text-xl text-center font-semibold text-gray-700"
+      >
+        Victoire de <span>{{ winner }}</span> !
+      </p>
     </div>
   </div>
 </template>
-
-<style scoped>
-.cell {
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
-  border: 1px solid #000;
-  text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.cell.disabled {
-  cursor: not-allowed;
-}
-
-.error {
-  color: red;
-}
-
-.players {
-  margin-bottom: 20px;
-}
-</style>

@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
-import LoginView from "../views/LoginView.vue";
-import RegisterView from "../views/RegisterView.vue";
-import DashboardView from "../views/DashboardView.vue";
-import ProfileView from "../views/ProfileView.vue";
+import Login from "../components/Login.vue";
+import Register from "../components/Register.vue";
+import Dashboard from "../components/Dashboard.vue";
+import Profile from "../components/Profile.vue";
 import Game from "../components/Game.vue";
 import { isAuthenticated } from "../../services/AuthProvider";
 
@@ -12,24 +12,24 @@ const router = createRouter({
     {
       path: "/login",
       name: "Login",
-      component: LoginView,
+      component: Login,
     },
     {
       path: "/register",
       name: "Register",
-      component: RegisterView,
+      component: Register,
       meta: { requiresGuest: true },
     },
     {
       path: "/",
       name: "Dashboard",
-      component: DashboardView,
+      component: Dashboard,
       meta: { requiresAuth: true },
     },
     {
       path: "/profile",
       name: "Profile",
-      component: ProfileView,
+      component: Profile,
       meta: { requiresAuth: true },
     },
     {
