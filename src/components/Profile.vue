@@ -1,20 +1,24 @@
 <script>
-import { getUser, updateUser } from '../../services/httpClient';
-import { removeToken, setToken, getUserIdentity } from '../../services/AuthProvider';
+import { getUser, updateUser } from "../../services/httpClient";
+import {
+  removeToken,
+  setToken,
+  getUserIdentity,
+} from "../../services/AuthProvider";
 
 export default {
-  name: 'Profile',
+  name: "Profile",
   data() {
     return {
       userBeforeUpdate: {
-        id: '',
-        username: '',
-        password: '',
-    },
+        id: "",
+        username: "",
+        password: "",
+      },
       user: {
-        id: '',
-        username: '',
-        password: '',
+        id: "",
+        username: "",
+        password: "",
       },
       error: null,
       successMessage: null,
@@ -24,7 +28,7 @@ export default {
     // Déconnexion
     deconnectUser() {
       removeToken();
-      this.$router.push('/login');
+      this.$router.push("/login");
     },
 
     // Charger les données utilisateur
@@ -32,14 +36,17 @@ export default {
       try {
         const identity = getUserIdentity();
         if (!identity || !identity.id) {
-          throw new Error('Utilisateur non authentifié.');
+          throw new Error("Utilisateur non authentifié.");
         }
 
         const user = await getUser(identity.id);
         this.userBeforeUpdate = { ...this.userBeforeUpdate, ...user };
       } catch (error) {
-        console.error('Erreur lors du chargement des informations utilisateur:', error);
-        this.error = error.message || 'Erreur inconnue.';
+        console.error(
+          "Erreur lors du chargement des informations utilisateur:",
+          error,
+        );
+        this.error = error.message || "Erreur inconnue.";
         this.deconnectUser();
       }
     },
@@ -60,11 +67,11 @@ export default {
         // Mettre à jour le composant avec les nouvelles données
         this.userBeforeUpdate.username = response.user.username;
 
-        this.successMessage = 'Mise à jour réussie !';
+        this.successMessage = "Mise à jour réussie !";
         this.error = null;
       } catch (error) {
-        console.error('Erreur lors de la mise à jour:', error);
-        this.error = error.message || 'Erreur inconnue.';
+        console.error("Erreur lors de la mise à jour:", error);
+        this.error = error.message || "Erreur inconnue.";
         this.successMessage = null;
       }
     },

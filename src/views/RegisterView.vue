@@ -1,5 +1,5 @@
 <script>
-import Register from '../components/Register.vue';
+import Register from "../components/Register.vue";
 export default {
   name: "RegisterView",
   components: {
@@ -9,6 +9,6 @@ export default {
 </script>
 
 <template>
-        <h1>Page d'inscription</h1>
-        <Register />        
+  <h1>Page d'inscription</h1>
+  <Register />
 </template>

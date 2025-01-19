@@ -60,5 +60,28 @@ const updateUser = (userData) => {
     return request('/user', 'PUT', userData);
 };
 
+const createGame = () => {
+    return request('/games', 'POST');
+};
 
-export { request, login, register, getUser, updateUser };
+const getGames = () => {
+    return request('/games', 'GET');
+};
+
+const getGame = (gameId) => {
+    return request(`/games/${gameId}`, 'GET');
+};
+
+const joinGame = (gameId) => {
+    return request(`/games/${gameId}/join`, 'POST');
+};
+
+const deleteGame = (gameId) => {
+    return request(`/games/${gameId}`, 'DELETE');
+};
+
+const playMove = (gameId, row, col) => {
+    return request(`/games/${gameId}/move/${row}/${col}`, 'POST');
+}
+
+export { request, login, register, getUser, updateUser, createGame, getGames,joinGame, deleteGame, getGame, playMove };
