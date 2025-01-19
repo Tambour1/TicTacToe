@@ -1,35 +1,57 @@
-# TicTacToe
+# TicTacToe App
+Cette application a été réalisée par **Victor GEORGES**, étudiant de BUT 3 Informatique à l'IUT Nancy-Charlemagne, dans le cadre d'un cours de développement Client Avancé.
 
-This template should help get you started developing with Vue 3 in Vite.
+# Tables des matières
+- [Description](#description)
+- [Sujets](#sujets)
+- [Technologies](#technologies)
+- [Installation](#installation)
+- [Lien](#lien)
 
-## Recommended IDE Setup
+# Description
+Ce projet est une application web de Tic Tac Toe.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+# Sujets
+Sujet et backend réalisés par Anthony RIMET : IUT Nancy-Charlemagne 2024
+- [Sujet](./docs/sujet.pdf)
 
-## Customize configuration
+# Technologies
+- VueJS, JavaScript, Vite
+- TailwindCSS
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+# Installation
+## Cloner le dépôt
+```bash
+# clonage du projet
+git clone https://github.com/Tambour1/TicTacToe.git
 
-## Project Setup
-
-```sh
-npm install
+# se placer à la racine du projet
+cd TicTacToe
 ```
+## Lancer le backend
+```bash
+# Se placer dans la répertoire à partir de la racine du projet
+cd backend
 
-### Compile and Hot-Reload for Development
+# Installer les dépendances
+npm install
 
-```sh
+# Lancer le backend
+npm run start
+```
+## Lancer le frontend
+```bash
+# se placer à la racine du projet
+cd TicTacToe
+
+# Installer les dépendances
+npm install
+
+# Lancer le projet
 npm run dev
 ```
+L'application sera accessible à l'adresse http://localhost:5173
 
-### Compile and Minify for Production
+# Lien
+- Dépot git : https://github.com/Tambour1/TicTacToe.git
 
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
