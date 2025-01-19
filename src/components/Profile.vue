@@ -1,10 +1,6 @@
 <script>
 import { getUser, updateUser } from "../../services/httpClient";
-import {
-  removeToken,
-  setToken,
-  getUserIdentity,
-} from "../../services/AuthProvider";
+import {removeToken, setToken, getUserIdentity } from "../../services/AuthProvider";
 
 export default {
   name: "Profile",
@@ -35,18 +31,10 @@ export default {
     async fetchUser() {
       try {
         const identity = getUserIdentity();
-        if (!identity || !identity.id) {
-          throw new Error("Utilisateur non authentifié.");
-        }
-
         const user = await getUser(identity.id);
         this.userBeforeUpdate = { ...this.userBeforeUpdate, ...user };
       } catch (error) {
-        console.error(
-          "Erreur lors du chargement des informations utilisateur:",
-          error,
-        );
-        this.error = error.message || "Erreur inconnue.";
+        this.error = error;
         this.deconnectUser();
       }
     },
@@ -70,12 +58,12 @@ export default {
         this.successMessage = "Mise à jour réussie !";
         this.error = null;
       } catch (error) {
-        console.error("Erreur lors de la mise à jour:", error);
-        this.error = error.message || "Erreur inconnue.";
+        this.error = error;
         this.successMessage = null;
       }
     },
   },
+
   mounted() {
     this.fetchUser();
   },
@@ -83,33 +71,72 @@ export default {
 </script>
 
 <template>
-  <div class="profile-view">
-    <h1>Profil Utilisateur</h1>
-    <p>Username : {{ userBeforeUpdate.username }}</p>
-    <form @submit.prevent="updateUser">
-      <div>
-        <label for="username">Nouveau nom d'utilisateur :</label>
-        <input id="username" v-model="user.username" required />
-      </div>
-      <div>
-        <label for="password">Nouveau mot de passe :</label>
-        <input id="password" v-model="user.password" type="password" />
-      </div>
-      <button type="submit">Mettre à jour</button>
-    </form>
+  <div class="min-h-screen bg-gray-50 flex justify-center items-center p-8">
+    <div class="bg-white w-full max-w-md p-8 rounded-lg shadow-lg">
+      <h1 class="text-2xl font-semibold text-center mb-6">
+        Profil Utilisateur
+      </h1>
 
-    <p v-if="successMessage" class="success">{{ successMessage }}</p>
-    <p v-if="error" class="error">{{ error }}</p>
+      <!-- Utilisateur actuel -->
+      <div class="mb-4 text-center">
+        <p class="text-lg text-gray-700">
+          Username actuel: <strong>{{ userBeforeUpdate.username }}</strong>
+        </p>
+      </div>
 
-    <button @click="deconnectUser">Se déconnecter</button>
+      <!-- Messages de succès ou d'erreur -->
+      <p v-if="successMessage" class="text-green-600 text-center mt-4">
+        {{ successMessage }}
+      </p>
+      <p v-if="error" class="text-red-600 text-center mt-4">{{ error }}</p>
+
+      <form @submit.prevent="updateUser">
+        <!-- Nouveau username -->
+        <div class="mb-4">
+          <label for="username" class="block text-gray-700"
+            >Nouveau nom d'utilisateur :</label
+          >
+          <input
+            id="username"
+            v-model="user.username"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            type="text"
+            required
+          />
+        </div>
+
+        <!-- Nouveau mot de passe -->
+        <div class="mb-4">
+          <label for="password" class="block text-gray-700"
+            >Nouveau mot de passe :</label
+          >
+          <input
+            id="password"
+            v-model="user.password"
+            class="w-full mt-2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            type="password"
+            placeholder="Optionnel"
+          />
+        </div>
+
+        <!-- Bouton de mise à jour -->
+        <button
+          type="submit"
+          class="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
+        >
+          Mettre à jour
+        </button>
+      </form>
+
+      <!-- Bouton de déconnexion -->
+      <div class="mt-6 text-center">
+        <button
+          @click="deconnectUser"
+          class="w-full py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
+        >
+          Se déconnecter
+        </button>
+      </div>
+    </div>
   </div>
 </template>
-
-<style scoped>
-.success {
-  color: green;
-}
-.error {
-  color: red;
-}
-</style>

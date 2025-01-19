@@ -8,7 +8,7 @@ export default {
 </script>
 <template>
   <button
-    class="cell"
+    class="w-16 h-16 bg-gray-200 border border-gray-300"
     :class="{ disabled: isDisabled }"
     :disabled="isDisabled"
     @click="$emit('click')"
@@ -17,26 +17,14 @@ export default {
 
 <style scoped>
 .player1-cell {
-  background-color: blue;
-  color: white;
+  background-color: rgb(97, 214, 8);
 }
 
 .player2-cell {
-  background-color: red;
-  color: white;
+  background-color: rgb(225, 58, 217);
 }
 
-.cell {
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
-  border: 1px solid #000;
-  text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.cell.disabled {
+.disabled {
   cursor: not-allowed;
 }
 </style>
