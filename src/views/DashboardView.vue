@@ -1,13 +1,12 @@
 <script>
-import Dashboard from '../components/Dashboard.vue'
+import Dashboard from "../components/Dashboard.vue";
 export default {
-  name: 'DashboardView',
+  name: "DashboardView",
   components: {
-    Dashboard
-  }
-}
+    Dashboard,
+  },
+};
 </script>
 <template>
-        <h1>Tableau de bord</h1>
-        <Dashboard />
+  <Dashboard />
 </template>
