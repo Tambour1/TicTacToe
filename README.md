@@ -50,7 +50,11 @@ npm install
 # Lancer le projet
 npm run dev
 ```
-L'application sera accessible à l'adresse http://localhost:5173
+L'application sera accessible à l'adresse local indiqué dans le terminal une fois la commande "npm run dev" lancée.
+
+Exemples : 
+- http://localhost:5173/
+- http://localhost:5174/
 
 # Lien
 - Dépot git : https://github.com/Tambour1/TicTacToe.git
